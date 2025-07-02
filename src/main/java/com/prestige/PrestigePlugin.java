@@ -13,6 +13,7 @@ import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
@@ -109,23 +110,30 @@ public class PrestigePlugin extends Plugin {
 
     @Subscribe
     public void onScriptCallbackEvent(ScriptCallbackEvent e) {
-        final String[] stringStack = client.getStringStack();
-        final int stringStackSize = client.getStringStackSize();
 
-        switch (e.getEventName()) {
-            case "skillTabTotalLevel":
-                int level = 0;
+        if (e.getEventName().equals("skillTabTotalLevel")) {
+            int level = 0;
 
-                for (Skill s : Skill.values()) {
-                    if (s == Skill.OVERALL) {
-                        continue;
-                    }
-
-                    level += Experience.getLevelForXp(client.getSkillExperience(s));
+            for (Skill s : Skill.values()) {
+                if (s == Skill.OVERALL) {
+                    continue;
                 }
 
-                stringStack[stringStackSize - 1] = TOTAL_LEVEL_TEXT_PREFIX + level;
-                break;
+                level += Experience.getLevelForXp(client.getSkillExperience(s));
+            }
+
+            Widget totalWidget = client.getWidget(WidgetID.SKILLS_GROUP_ID, 24);
+
+            if(totalWidget == null)
+                return;
+
+            Widget[] totalWidgetComponents = totalWidget.getStaticChildren();
+
+            if(totalWidgetComponents == null || totalWidgetComponents.length < 2)
+                return;
+
+            Widget widgetText = totalWidgetComponents[2];
+            widgetText.setText(TOTAL_LEVEL_TEXT_PREFIX + level);
         }
     }
 
