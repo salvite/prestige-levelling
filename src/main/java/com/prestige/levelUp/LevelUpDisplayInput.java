@@ -37,13 +37,7 @@ import net.runelite.api.Experience;
 import net.runelite.api.FontID;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
-import net.runelite.api.widgets.JavaScriptCallback;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetPositionMode;
-import net.runelite.api.widgets.WidgetSizeMode;
-import net.runelite.api.widgets.WidgetTextAlignment;
-import net.runelite.api.widgets.WidgetType;
+import net.runelite.api.widgets.*;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.game.chatbox.ChatboxInput;
 import net.runelite.client.input.KeyListener;
@@ -184,7 +178,7 @@ public class LevelUpDisplayInput extends ChatboxInput implements KeyListener
     }
 
     private void triggerCloseViaMessage() {
-        final Widget levelUpContinue = plugin.getClient().getWidget(WidgetInfo.CHATBOX_CONTAINER).getChild(2);
+        final Widget levelUpContinue = plugin.getClient().getWidget(ComponentID.CHATBOX_CONTAINER).getChild(2);
         levelUpContinue.setText("Please wait...");
 
         closeMessage = true;
