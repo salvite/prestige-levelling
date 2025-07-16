@@ -10,10 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ScriptCallbackEvent;
-import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
@@ -22,12 +21,8 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 
 @Slf4j
 @PluginDescriptor(
@@ -122,7 +117,7 @@ public class PrestigePlugin extends Plugin {
                 level += Experience.getLevelForXp(client.getSkillExperience(s));
             }
 
-            Widget totalWidget = client.getWidget(WidgetID.SKILLS_GROUP_ID, 24);
+            Widget totalWidget = client.getWidget(InterfaceID.Stats.TOTAL);
 
             if(totalWidget == null)
                 return;
