@@ -43,17 +43,22 @@ public class PrestigePlugin extends Plugin {
     @Inject
     @Getter(AccessLevel.PUBLIC)
     private Client client;
+
     @Inject
     @Getter(AccessLevel.PUBLIC)
     private ClientThread clientThread;
+
     @Inject
     @Getter(AccessLevel.PUBLIC)
     private ChatboxPanelManager chatboxPanelManager;
+
     @Inject
     @Getter(AccessLevel.PUBLIC)
     private ChatMessageManager chatMessageManager;
+
     @Inject
     private PrestigeConfig config;
+
     private LevelUpDisplayInput input;
 
     @Provides
@@ -90,7 +95,7 @@ public class PrestigePlugin extends Plugin {
 
     @Override
     protected void shutDown() {
-        this.resetSkills();
+        this.resetSkills(true);
     }
 
     @Subscribe
@@ -100,7 +105,7 @@ public class PrestigePlugin extends Plugin {
         }
 
         this.calculatePrestigeRange();
-        this.resetSkills();
+        this.resetSkills(false);
         this.updateAllStats();
     }
 
@@ -115,7 +120,7 @@ public class PrestigePlugin extends Plugin {
                     continue;
                 }
 
-                level += Experience.getLevelForXp(client.getSkillExperience(s));
+                level += Math.min(Experience.getLevelForXp(client.getSkillExperience(s)), getMaxLevel(false));
             }
 
             Widget totalWidget = client.getWidget(InterfaceID.Stats.TOTAL);
@@ -161,18 +166,22 @@ public class PrestigePlugin extends Plugin {
         this.changeStat(statChanged.getSkill(), statChanged.getLevel(), statChanged.getBoostedLevel(), false);
     }
 
-    private void resetSkills() {
+    private void resetSkills(boolean shutdown) {
         for (Skill skill : Skill.values()) {
             if (skill != Skill.OVERALL) {
                 int xp = ACTUAL_SKILL_XP.get(skill);
 
-                client.getRealSkillLevels()[skill.ordinal()] = Experience.getLevelForXp(xp);
+                client.getRealSkillLevels()[skill.ordinal()] = Math.min(Experience.getLevelForXp(xp), getMaxLevel(shutdown));
                 client.getSkillExperiences()[skill.ordinal()] = xp;
                 client.getBoostedSkillLevels()[skill.ordinal()] = ACTUAL_SKILL_BOOST.get(skill);
 
                 client.queueChangedSkill(skill);
             }
         }
+    }
+
+    private int getMaxLevel(boolean shutdown) {
+        return config.showVirtualLevels() && !shutdown ? 120 : 99;
     }
 
     private void changeStat(Skill skill, int level, int boostedLevel, boolean ignoreLevels) {
